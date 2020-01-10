@@ -185,3 +185,7 @@ read 方法调用 syscall.Read 不会阻塞，而是在 EAGAIN 后 park goroutin
 The scheduler's job is to distribute ready-to-run goroutines over worker threads.
 
 G, P, M 的设计文档可以这里查看https://golang.org/s/go11sched
+
+-   总结：
+
+accept 创建的 fd 都是非阻塞的，read，write，包括 accept 的底层都是非阻塞的。accept 的 fd 会加入 epoll 中。当没有数据时，将对应的 goroutine park，这样 M 可以继续工作，goroutine 上下文的切换比系统线程轻量很多，epoll_wait 的调用由 P 控制，会将 ready 的 fd 对应的 goroutine 唤醒。
